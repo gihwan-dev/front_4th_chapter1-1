@@ -54,7 +54,7 @@ describe("기본과제 테스트", () => {
       expect(submitButtons[0].innerHTML.includes("로그인")).toBe(true);
     });
 
-    it('로그인이 되지 않은 상태에서 "/profile" 경로로 접근하면, 로그인 페이지로 리다이렉션 된다.', async () => {
+    it('로그인이 되지 않은 상태에서 "/profile" 경로로 접근하면, 로그인 페이지로 리다이렉션 된다.', () => {
       // 로그인 상태 시뮬레이션
       goTo("/profile");
 
