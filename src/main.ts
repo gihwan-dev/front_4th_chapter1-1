@@ -1,6 +1,6 @@
 import { render } from "./libs/render";
 import { ErrorPage, LoginPage, MainPage, ProfilePage } from "./pages/index";
-import { BrowserRouter } from "./libs/router";
+import { Router } from "./libs/router";
 import RouteGuard from "./components/RouteGuard";
 import { addEventListener, delegateEvent } from "./services/eventProcessor.js";
 import { isAuthenticated, login, logout } from "./stores/authStore";
@@ -8,32 +8,39 @@ import navigator from "./libs/navigator";
 import { setUser } from "./stores/userStore";
 
 render(
-  BrowserRouter([
-    {
-      path: "/",
-      element: MainPage,
-    },
-    {
-      path: "/login",
-      element: RouteGuard(LoginPage, {
-        Fallback: MainPage,
-        redirectTo: "/",
-        condition: () => isAuthenticated() && location.pathname === "/login",
-      }),
-    },
-    {
-      path: "/profile",
-      element: RouteGuard(ProfilePage, {
-        Fallback: LoginPage,
-        redirectTo: "/login",
-        condition: () => !isAuthenticated() && location.pathname === "/profile",
-      }),
-    },
-    {
-      path: "*",
-      element: ErrorPage,
-    },
-  ]),
+  Router(
+    [
+      {
+        path: "/",
+        element: MainPage,
+      },
+      {
+        path: "/login",
+        element: RouteGuard(LoginPage, {
+          Fallback: MainPage,
+          redirectTo: "/",
+          condition: () =>
+            isAuthenticated() &&
+            (location.pathname === "/login" || location.hash === "#/login"),
+        }),
+      },
+      {
+        path: "/profile",
+        element: RouteGuard(ProfilePage, {
+          Fallback: LoginPage,
+          redirectTo: "/login",
+          condition: () =>
+            !isAuthenticated() &&
+            (location.pathname === "/profile" || location.hash === "#/profile"),
+        }),
+      },
+      {
+        path: "*",
+        element: ErrorPage,
+      },
+    ],
+    { useHash: true },
+  ),
 );
 
 delegateEvent();

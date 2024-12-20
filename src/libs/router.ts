@@ -9,21 +9,30 @@ interface Route {
   element: Element;
 }
 
+interface RouterOptions {
+  useHash?: boolean;
+}
+
 const routeMap = new Map<Path, Element>();
 
-export function BrowserRouter(routes: Route[]) {
+export function Router(routes: Route[], options: RouterOptions) {
   saveRoutesInMap(routes);
-  attachRerenderEvent();
+  attachPopstateEvent();
+
+  if (options.useHash) {
+    attachHashChangeEvent();
+  }
 
   return () => {
-    const { pathname } = location;
-    const targetComponent = findTargetComponentOrNotFound(pathname as Path);
+    const { pathname, hash } = location;
 
-    if (targetComponent) {
-      return targetComponent;
+    if (options.useHash && isHashRoute(hash)) {
+      const parsedHash = removeHashSymbol(hash);
+
+      return findTargetComponentOrNotFound(parsedHash);
     }
 
-    throw new Error("존재하지 않는 URL 입니다.");
+    return findTargetComponentOrNotFound(pathname as Path);
   };
 }
 
@@ -44,6 +53,18 @@ function findTargetComponentOrNotFound(path: Path) {
   return null;
 }
 
-function attachRerenderEvent() {
+function attachPopstateEvent() {
   window.addEventListener("popstate", rerender);
+}
+
+function attachHashChangeEvent() {
+  window.addEventListener("hashchange", rerender);
+}
+
+function isHashRoute(path: string) {
+  return path.startsWith("#");
+}
+
+function removeHashSymbol(path: string) {
+  return path.replace("#", "") as Path;
 }
