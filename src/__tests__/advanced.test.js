@@ -3,8 +3,8 @@ import {
   afterAll,
   beforeAll,
   beforeEach,
-  expect,
   describe,
+  expect,
   it,
   vi,
 } from "vitest";
@@ -13,7 +13,7 @@ beforeAll(async () => {
   // DOM 초기화
   window.alert = vi.fn();
   document.body.innerHTML = '<div id="root"></div>';
-  await import("../main.js");
+  await import("../main.ts");
 });
 
 afterAll(() => {
